@@ -2,8 +2,11 @@
 # Created by https://www.gitignore.io/api/c,vim,osx,c++,linux,cmake,nanoc,emacs,python,django,windows,pycharm,autotools,visualstudio
 
 ### Index custom additions ###
-MNIST_data/
-logs/
+MNIST_data/*
+!MNIST_data/.gitkeep
+
+logs/test/*/
+logs/train/*/
 *.ini
 
 
