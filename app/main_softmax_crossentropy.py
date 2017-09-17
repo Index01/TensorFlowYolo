@@ -22,11 +22,12 @@ def main():
 
 
     # Training parameters
-    mnist = input_data.read_data_sets("MNIST_data", one_hot=True)
+    mnist = input_data.read_data_sets("../MNIST_data", one_hot=True)
     learning_rate = 0.01
     batch_size = 100
     training_epochs = 1000
-
+    train_logs = '../logs/train/softmax_crossentropy'
+    test_logs = '../logs/test/softmax_crossentropy'
 
 
     # Model Parameters
@@ -84,8 +85,8 @@ def main():
 
 
     # FileWriters for further introspection with tensorboard
-    train_writer = tf.summary.FileWriter(logdir='./logs/train/softmax_crossentropy')
-    test_writer = tf.summary.FileWriter(logdir='./logs/test/softmax_crossentropy')
+    train_writer = tf.summary.FileWriter(logdir=train_logs)
+    test_writer = tf.summary.FileWriter(logdir=test_logs)
 
 
 
