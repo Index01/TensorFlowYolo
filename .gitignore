@@ -5,6 +5,8 @@
 MNIST_data/*
 !MNIST_data/.gitkeep
 
+./.cache/
+/tests/__pycache__/
 logs/test/*/
 logs/train/*/
 *.ini

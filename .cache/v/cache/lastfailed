@@ -1,6 +1,0 @@
-{
-  "tests/test_multilayer_convolution.py::TestMultilayerConvolution::test_mlconv": true, 
-  "tests/test_multilayer_convolution.py::TestMultilayerConvolution::test_setup": true, 
-  "tests/test_multilayer_convolution.py::TestMultilayerConvolution::test_teardown": true, 
-  "tests/test_multilayer_convolution.py::test_mlcv_modelSetup": true
-}

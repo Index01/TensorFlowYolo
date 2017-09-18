@@ -59,23 +59,32 @@ def create_convolutional_layer(x, weights, biases):
         return h_pool
 
 
+def create_second_conv_layer(previous_layer, weights, biases):
+    with tf.name_scope("second_conv_layer"):
+        W_conv2 = W_shop(weights)
+        b_conv2 = W_shop(biases)
+     
+        h_conv2 = tf.nn.relu(convolve(previous_layer, W=W_conv2) + b_conv2) 
+        h_pool2 = pool(h_conv2) 
+        return h_pool2
+
 def create_connected_layer(layer_in):
     """ Create a fully connected layer with relu"""
    
     with tf.name_scope("connected_layer"):
+        
         flattened = tf.reshape(layer_in, [-1, 7 * 7 * 64]) 
+        W_flat = W_shop([7 * 7 * 64, 1024]) 
+        b_flat = b_shop([1024]) 
 
-        W_flat = W_shop([7 * 7 * 64, 1000]) 
-        b_flat = b_shop([1000]) 
-
-        dl_xent = tf.matmul(flattened, W_flat) + b_flat 
-        return tf.nn.relu(dl_xent) 
+        return tf.nn.relu(tf.matmul(flattened, W_flat) + b_flat) 
+        #return tf.nn.relu(dl_xent) 
 
 
 def create_logits(drop_op):
     """ Accept a dense layer and return logits"""
     #return tf.layers.dense(inputs=dense_layer, units=10) 
-    W_logs = W_shop([1000, 10]) 
+    W_logs = W_shop([1024, 10]) 
     b_logs = b_shop([10]) 
     return tf.matmul(drop_op, W_logs) + b_logs
 
@@ -83,7 +92,7 @@ def create_logits(drop_op):
 def drop_neurons(fully_connected_layer):
     """ DDDDDdropout """
     keep_prob = tf.placeholder(tf.float32, shape=[])
-    print type(fully_connected_layer)
+    #print type(fully_connected_layer)
     cropped =tf.nn.dropout(fully_connected_layer, keep_prob) 
     return cropped, keep_prob
 
@@ -91,10 +100,11 @@ def drop_neurons(fully_connected_layer):
 def model_setup(x):
     # Model setup
     conv_layer1 = create_convolutional_layer(x, [5, 5, 1, 32], [32])
+    conv_layer2 = create_second_conv_layer(conv_layer1, [5, 5, 32, 64], [64]) 
 #    print "conv_layer:%s" % (conv_layer1) 
     #conv_layer2 = create_convolutional_layer(conv_layer1, [5, 5, 32, 64], [64])
 
-    connected_layer1 = create_connected_layer(conv_layer1)
+    connected_layer1 = create_connected_layer(conv_layer2)
 #    print "connected:%s" % (connected_layer1) 
     cropped_neurons, keep_prob = drop_neurons(connected_layer1) 
 #    print "cropped:%s" % (cropped_neurons) 
@@ -138,7 +148,7 @@ def main():
     model = model_setup(x),
     keep_prob = model[0].get('keep_prob') 
     logits=model[0].get('logits'), 
-    print "demLogitssssss: %s" % logits 
+#    print "demLogitssssss: %s" % logits 
     
     # Loss functions
     with tf.name_scope("cross_entropy"):
@@ -184,16 +194,16 @@ def main():
 
             
             batch_x, batch_y = mnist.train.next_batch(batch_size)
-            print "labels:%s" % (y_) 
+#            print "labels:%s" % (y_) 
 
 
-            print "batch_x:%s" % (str(batch_x.shape)) 
-            print "batch_y:%s" % (str(batch_y.shape)) 
+#            print "batch_x:%s" % (str(batch_x.shape)) 
+#            print "batch_y:%s" % (str(batch_y.shape)) 
 
            #_, summary, iter_loss = sess.run([train, summary_merge, cross_entropy_loss], 
            #                                  feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.05})
 
-            print "labels:%s" % (y_) 
+#            print "labels:%s" % (y_) 
             train.run(feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.05})
 
 """
