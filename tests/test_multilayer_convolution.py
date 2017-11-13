@@ -82,7 +82,7 @@ def test_mlcv_create_connectedLayer():
 
 def test_mlcv_modelSetup():
     assert ((cuTest.model_setup(x)).get('keep_prob')).shape==()
-    assert ((cuTest.model_setup(x)).get('logits'))[0].shape==(100, 10)
+    assert ((cuTest.model_setup(x)).get('logits')).shape==(100, 10)
 
 
 

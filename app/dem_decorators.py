@@ -13,9 +13,9 @@ def tfNamespace(func):
         be added to the Summary by name.""" 
     @wraps(func)
     def wrapper(*args, **kwargs):
-        print func.__name__
+        #print func.__name__
         tf.name_scope(func.__name__)
-        print tf.name_scope(func.__name__) 
+        #print tf.name_scope(func.__name__) 
         return func(*args, **kwargs)
     return wrapper
 

@@ -9,9 +9,8 @@ from dem_decorators import tfNamespace
 
 
 """
-   Multilayer convolutional model.
+   Multilayer CNN model.
 """
-
 
 @tfNamespace
 def W_shop(shape):
@@ -26,12 +25,13 @@ def b_shop(shape):
     b = tf.constant(0.1, shape=shape, name='b')
     return tf.Variable(b)
 
+
 @tfNamespace
 def convolve(x, W):
     """ Convolve the image with the weight """
     strides = [1, 1, 1, 1]
-    print x
-    print W
+    #print x
+    #print W
     return tf.nn.conv2d(input=x, 
 		        filter=W,
 		        strides=strides, 
@@ -53,7 +53,6 @@ def create_conv_layer(x, weights, biases):
     """ Provide a flexible combination of convolution and pooling steps. 
         Args: an image, a list of weights, list of biases
     """
-
     with tf.name_scope("conv_layer"):
         W_conv = W_shop(weights)
         b_conv = b_shop(biases)
@@ -63,15 +62,13 @@ def create_conv_layer(x, weights, biases):
         
         # Relu
         h_conv = tf.nn.relu(convolve(x=x_image, W=W_conv) + b_conv) 
-        h_pool = pool(h_conv) 
         
-        return h_pool
+        return pool(h_conv)
 
 
 @tfNamespace
 def create_subsequent_conv_layer(previous_layer, weights, biases):
     """ The subsequent layers need a slightly different method """
-
     with tf.name_scope("second_conv_layer"):
         W_conv2 = W_shop(weights)
         b_conv2 = W_shop(biases)
@@ -84,26 +81,19 @@ def create_subsequent_conv_layer(previous_layer, weights, biases):
 @tfNamespace
 def create_connected_layer(layer_in, dim1):
     """ Create a fully connected layer with relu"""
-   
     with tf.name_scope("connected_layer"):
         flat_shape = [-1, 7 * 7 * dim1] 
-        #flat_shape = [-1, 10 * 10 * dim1] 
-        #print "layer_in: %s" % (layer_in)
-        #print "flat_shape: %s" % (flat_shape)
   
         flattened = tf.reshape(layer_in, flat_shape) 
         W_flat = W_shop([(7 * 7 * dim1), 1024]) 
-        #W_flat = W_shop([(10 * 10 * dim1), 1024]) 
         b_flat = b_shop([1024]) 
 
         return tf.nn.relu(tf.matmul(flattened, W_flat) + b_flat) 
-        #return tf.nn.relu(dl_xent) 
 
 
 @tfNamespace
 def create_logits(drop_op):
     """ Accept a dense layer and return logits"""
-    #return tf.layers.dense(inputs=dense_layer, units=10) 
     W_logs = W_shop([1024, 10]) 
     b_logs = b_shop([10]) 
     return tf.matmul(drop_op, W_logs) + b_logs
@@ -113,15 +103,15 @@ def create_logits(drop_op):
 @tfNamespace
 def drop_neurons(fully_connected_layer):
     """ DDDDDdropout """
+    #TODO: review keep_prob implementation 
     keep_prob = tf.placeholder(tf.float32, shape=[])
-    #print type(fully_connected_layer)
     cropped =tf.nn.dropout(fully_connected_layer, keep_prob) 
     return cropped, keep_prob
 
 
 @tfNamespace
 def model_setup(x):
-    # Model setup
+    """ Model setup """
     conv_layer1 = create_conv_layer(x, [5, 5, 1, 32], [32])
     conv_layer2 = create_subsequent_conv_layer(conv_layer1, [5, 5, 32, 64], [64]) 
     connected_layer1 = create_connected_layer(conv_layer2, 64)
@@ -132,10 +122,9 @@ def model_setup(x):
 
 @tfNamespace
 def IO_setup():
-    # Inputs and Outputs
+    """ Inputs and Outputs """
     with tf.name_scope("input_output"):
         x = tf.placeholder(tf.float32, [None, 784], name='x')
-        # Placeholder for the control
         y_ = tf.placeholder(tf.float32, [None, 10], name='y_')
         return x, y_
 
@@ -161,6 +150,8 @@ def main():
     test_logs = '../logs/test/multilayer_convolution'
     train_writer = tf.summary.FileWriter(logdir=train_logs)
     test_writer = tf.summary.FileWriter(logdir=test_logs)
+
+    # Model
     x, y_ = IO_setup()
     model = model_setup(x),
     keep_prob = model[0].get('keep_prob') 
@@ -184,7 +175,6 @@ def main():
     # Accuracy
     with tf.name_scope('correct_predictions'): 
         correct_predictions = tf.equal(tf.argmax(logits, -1),  tf.argmax(y_, 1)) 
- 
     with tf.name_scope('accuracy'):
         accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
 
@@ -192,14 +182,10 @@ def main():
     # Summary data for tensorboard
     tf.summary.scalar('cross_entropy', cross_entropy_loss)
     tf.summary.scalar('accuracy', accuracy)
-
     tf.summary.image('input', tf.reshape(x, [-1, 28, 28, 1]), 3)
-
 #    tf.summary.histogram('weights', W)
 #    tf.summary.histogram('biases', b)
-    
     summary_merge = tf.summary.merge_all()
-
 
 
     # Init and Session
@@ -209,9 +195,7 @@ def main():
         for epoch in range(training_epochs):
             
             batch_x, batch_y = mnist.train.next_batch(batch_size)
-
             #train.run(feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.5})
-
             _, summary = sess.run([train, summary_merge],
                                   feed_dict={x:batch_x, 
                                              y_:batch_y, 
