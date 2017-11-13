@@ -1,0 +1,3 @@
+{
+  "tests/test_multilayer_convolution.py::test_mlcv_modelSetup": true
+}
