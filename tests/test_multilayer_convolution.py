@@ -4,18 +4,16 @@
 
 import pytest
 import tensorflow as tf
-from app import main_multilayer_convolutional as cuTest
+#from app import main_multilayer_convolutional as cuTest
+from app import cnn_model_components as cuTest
 
 print "\n[+] Engage Multilayer Convolution Tests, Starfighter.\n"
 
 x = tf.placeholder(tf.float32, [100, 784])
 conv_layer1 = cuTest.create_conv_layer(x, [5, 5, 1, 32], [32])   
-#conv_layer12 = cuTest.create_subsequent_conv_layer(conv_layer1, [5, 5, 32, 64], [64])
 conv_layer2 = cuTest.create_subsequent_conv_layer(conv_layer1, [5, 5, 32, 64], [64])
-#conv_layer21 = cuTest.create_subsequent_conv_layer(conv_layer2, [5, 5, 128, 32], [32])
 cropped_neurons, keep_prob = cuTest.drop_neurons(conv_layer2)
 connected_layer = cuTest.create_connected_layer(cropped_neurons, 32)
-#connected_layer = cuTest.create_connected_layer(conv_layer21, 32)
 cropped_neurons, keep_prob = cuTest.drop_neurons(connected_layer)
  
 def test_mlcv_wshop():
@@ -42,17 +40,12 @@ def test_mlcv_pool():
 
 
 def test_mlcv_create_logits():
-#    conv_layer = cuTest.create_conv_layer(x, [5, 5, 1, 32], [32])   
-#    conv_layer2 = cuTest.create_subsequent_conv_layer(conv_layer, [5, 5, 32, 64], [64])
     connected_layer = cuTest.create_connected_layer(conv_layer2, 64)
     cropped_neurons, keep_prob = cuTest.drop_neurons(connected_layer)
     assert (cuTest.create_logits(cropped_neurons)).shape==(100, 10)
 
 
 def test_mlcv_drop_neurons():
-     
-#    conv_layer = cuTest.create_conv_layer(x, [5, 5, 1, 32], [32])   
-#    conv_layer2 = cuTest.create_subsequent_conv_layer(conv_layer, [5, 5, 32, 64], [64])
     connected_layer = cuTest.create_connected_layer(conv_layer2, 64)
     cropped_neurons, keep_prob = cuTest.drop_neurons(connected_layer)
     assert cropped_neurons.shape==(100, 1024)
@@ -67,8 +60,6 @@ def test_mlcv_create_convLayer():
 def test_mlcv_create_subsequent_conv_layer():
     W_cl2 = [5, 5, 32, 64]
     b_cl2 = [64]
-
-#    conv_layer1 = cuTest.create_conv_layer(x, [5, 5, 1, 32], [32])   
     assert (cuTest.create_subsequent_conv_layer(conv_layer1, W_cl2, b_cl2)).shape==(100, 7, 7, 64) 
 
 
@@ -81,6 +72,7 @@ def test_mlcv_create_connectedLayer():
 
 
 def test_mlcv_modelSetup():
+    print cuTest.model_setup(x).get('keep_prob')
     assert ((cuTest.model_setup(x)).get('keep_prob')).shape==()
     assert ((cuTest.model_setup(x)).get('logits')).shape==(100, 10)
 
