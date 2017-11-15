@@ -37,7 +37,8 @@ def main():
     mnist = input_data.read_data_sets("../MNIST_data", one_hot=True)
     learning_rate = 0.01
     batch_size = 100
-    training_epochs = 100
+    #training_epochs = 100
+    training_epochs = 1000
     train_logs = '../logs/train/multilayer_convolution'
     test_logs = '../logs/test/multilayer_convolution'
     train_writer = tf.summary.FileWriter(logdir=train_logs)
@@ -49,6 +50,7 @@ def main():
     keep_prob = model[0].get('keep_prob') 
     logits=model[0].get('logits'), 
     
+    print logits
     # Loss functions
     with tf.name_scope("cross_entropy"):
         cross_entropy_loss = tf.reduce_mean(
@@ -70,13 +72,14 @@ def main():
     with tf.name_scope('accuracy'):
         accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
 
- 
+
     # Summary data for tensorboard
     tf.summary.scalar('cross_entropy', cross_entropy_loss)
     tf.summary.scalar('accuracy', accuracy)
     tf.summary.image('input', tf.reshape(x, [-1, 28, 28, 1]), 3)
     summary_merge = tf.summary.merge_all()
     print "[+]summary_merge: %s" % summary_merge
+
 
     # Init and Session
     init = tf.global_variables_initializer() 
@@ -85,26 +88,25 @@ def main():
  
         print "[+]summary_merge: %s" % summary_merge
         for epoch in range(training_epochs):
-            
             batch_x, batch_y = mnist.train.next_batch(batch_size)
-            train.run(feed_dict={x: batch_x, y_: batch_y, keep_prob: 0.5})
+            #train.run(feed_dict={x: batch_x, y_: batch_y, keep_prob: 1.0})
             _, summary = sess.run([train, summary_merge],
                                   feed_dict={x:batch_x, 
                                              y_:batch_y, 
                                              keep_prob: 0.5})
- 
-            if epoch % 10 == 0:
-                print "[+] Accuracy: %s" % (accuracy.eval(
-                                            feed_dict={x:mnist.test.images, 
-                                                       y_:mnist.test.labels,
-                                                       keep_prob: 1.0}))
+            if epoch % 100 == 0:
+#"""
+#                print "[+] Accuracy: %s" % (accuracy.eval(
+#                                            feed_dict={x:mnist.test.images, 
+#                                                       y_:mnist.test.labels,
+#                                                       keep_prob: 1.0}))
+#"""
+                print "[+] keep_prob: %s" % (keep_prob) 
 
-                #print "[+] keep_prob: %s" % (keep_prob) 
-
-                # Generate the network graph for tensor board
                 train_writer.add_summary(summary, epoch)
+            else:
+                print "else"
         train_writer.add_graph(sess.graph)
-
 
 if __name__ == '__main__':
     main()

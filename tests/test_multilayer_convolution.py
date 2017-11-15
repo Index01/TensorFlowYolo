@@ -64,10 +64,6 @@ def test_mlcv_create_subsequent_conv_layer():
 
 
 def test_mlcv_create_connectedLayer():
-    
-#    conv_layer = cuTest.create_conv_layer(x, [5, 5, 1, 32], [32])   
-#    conv_layer2 = cuTest.create_subsequent_conv_layer(conv_layer, [5, 5, 32, 64], [64])
- 
     assert (cuTest.create_connected_layer(conv_layer2, 64)).shape==(100, 1024)
 
 
