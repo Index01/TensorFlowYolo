@@ -5,6 +5,7 @@
 MNIST_data/*
 !MNIST_data/.gitkeep
 
+./.cache/
 ./.cache/*
 /tests/__pycache__/
 logs/test/*/

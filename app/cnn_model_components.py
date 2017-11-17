@@ -1,6 +1,6 @@
 
 import tensorflow as tf
-from dem_decorators import tfNamespace
+from dem_decorators import tfNamespace, tfNamespaceBias, tfNamespaceWeight, tfNamespaceScalar 
 
 
 """
@@ -9,21 +9,21 @@ from dem_decorators import tfNamespace
    Currently these modules are using constants which anticipate the MNist dataset as input.
 """
 
-#@tfNamespace
+@tfNamespaceWeight
 def W_shop(shape):
     """ Model weights"""
     W = tf.truncated_normal(shape, stddev=0.1, name='W')
     return tf.Variable(W)
 
 
-#@tfNamespace
+@tfNamespaceBias
 def b_shop(shape):
     """ Model biases"""
     b = tf.constant(0.1, shape=shape, name='b')
     return tf.Variable(b)
 
 
-#@tfNamespace
+@tfNamespace
 def convolve(x, W):
     """ Convolve the image with the weight """
     strides = [1, 1, 1, 1]
@@ -36,7 +36,7 @@ def convolve(x, W):
 		        name="convolve") 
 
     
-#@tfNamespace
+@tfNamespace
 def pool(x):
     """ Pool the convolutions """
     strides = [1, 2, 2, 1]
@@ -45,7 +45,7 @@ def pool(x):
         return tf.nn.max_pool(x, ksize=ksize, strides=strides, padding='SAME') 
 
 
-#@tfNamespace
+@tfNamespace
 def create_conv_layer(x, weights, biases):
     """ Provide a flexible combination of convolution and pooling steps. 
         Args: an image, a list of weights, list of biases
@@ -62,7 +62,7 @@ def create_conv_layer(x, weights, biases):
         return pool(h_conv)
 
 
-#@tfNamespace
+@tfNamespace
 def create_subsequent_conv_layer(previous_layer, weights, biases):
     """ The subsequent layers need a slightly different method """
     with tf.name_scope("second_conv_layer"):
@@ -74,7 +74,7 @@ def create_subsequent_conv_layer(previous_layer, weights, biases):
         return pool(h_conv2)
 
 
-#@tfNamespace
+@tfNamespace
 def create_connected_layer(layer_in, dim1):
     """ Create a fully connected layer with relu"""
     with tf.name_scope("connected_layer"):
@@ -87,7 +87,7 @@ def create_connected_layer(layer_in, dim1):
         return tf.nn.relu(tf.matmul(flattened, W_flat) + b_flat) 
 
 
-#@tfNamespace
+@tfNamespace
 def create_logits(drop_op):
     """ Accept a dense layer and return logits"""
     W_logs = W_shop([1024, 10]) 
@@ -96,7 +96,7 @@ def create_logits(drop_op):
     #return tf.reshape(tf.matmul(drop_op, W_logs) + b_logs, [-1, 16, 16, 1])
 
 
-#@tfNamespace
+@tfNamespace
 def drop_neurons(fully_connected_layer):
     """ DDDDDdropout """
     #TODO: review keep_prob implementation 
@@ -105,7 +105,7 @@ def drop_neurons(fully_connected_layer):
     return cropped, keep_prob
 
 
-#@tfNamespace
+@tfNamespace
 def model_setup(x):
     """ Model setup """
     conv_layer1 = create_conv_layer(x, [5, 5, 1, 32], [32])
@@ -114,5 +114,32 @@ def model_setup(x):
     cropped_neurons1, keep_prob = drop_neurons(connected_layer1) 
     logits = create_logits(cropped_neurons1) 
     return {'keep_prob':keep_prob, 'logits':logits}
+
+
+### Loss and activation functions below ###
+
+@tfNamespaceScalar
+def cross_entropy(logits, labels):
+    return tf.reduce_mean(
+                          tf.nn.softmax_cross_entropy_with_logits(
+                          logits=logits,
+                          labels=labels,
+                          name='cross_entropy_loss'))
+
+ 
+@tfNamespace
+def train_optimizer(cross_entropy_loss, learning_rate):
+    """ Train and optimize step"""
+    optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
+    return optimizer.minimize(cross_entropy_loss)
+
+    
+@tfNamespace
+def calc_accuracy(logits, labels):
+    correct_predictions = tf.equal(tf.argmax(logits, -1), tf.argmax(labels, 1))
+    return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
+
+
+
 
 
