@@ -1,6 +1,9 @@
 # ~*~ coding: utf-8 ~*~
 #! /usr/bin/env python
 
+"""
+   Multilayer CNN model for solving the 10,000 data point Mnist set.
+"""
 
 import os
 import tensorflow as tf
@@ -9,18 +12,12 @@ from tensorflow.examples.tutorials.mnist import input_data
 import cnn_model_components as cnn
 from log_utils import Projector, TBLogger
 
-"""
-   Multilayer CNN model.
-"""
-
 def IO_setup():
     """ Inputs and Outputs """
     with tf.name_scope("input_output"):
         x = tf.placeholder(tf.float32, [None, 784], name='x')
         y_ = tf.placeholder(tf.float32, [None, 10], name='y_')
         return x, y_
-
-
 
 
 def main():
@@ -38,13 +35,8 @@ def main():
     mnist = input_data.read_data_sets("../MNIST_data", one_hot=True)
     learning_rate = 0.01
     batch_size = 100
-    #training_epochs = 100
     training_epochs = 1000
-#    train_logs = os.path.abspath('../logs/train/multilayer_convolution')
-#    test_logs = os.path.abspath('../logs/test/multilayer_convolution')
-#    train_writer = tf.summary.FileWriter(logdir=train_logs)
-#    test_writer = tf.summary.FileWriter(logdir=test_logs)
-#
+
 
     # Model
     x, y_ = IO_setup()
@@ -62,7 +54,6 @@ def main():
                              metadata_data=mnist.test.images) 
 
 
-
     # Loss and Train
     cross_entropy_loss = cnn.cross_entropy(logits=logits, labels=y_)
     train = cnn.train_optimizer(cross_entropy_loss, learning_rate) 
@@ -70,37 +61,6 @@ def main():
 
     summary_merge = tbLogger.merge_summaries() 
 
-
-
-#    # Loss functions
-#    with tf.name_scope("cross_entropy"):
-#        cross_entropy_loss = tf.reduce_mean(
-#                                            tf.nn.softmax_cross_entropy_with_logits(
-#                                            logits=logits, 
-#                                            labels=y_,
-#                                            name='cross_entropy_loss'))
-#   
-#
-#    # Train
-#    with tf.name_scope("train_optimize"):
-#        optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-#        train = optimizer.minimize(cross_entropy_loss)
-#
-#
-#    # Accuracy
-#    with tf.name_scope('correct_predictions'): 
-#        correct_predictions = tf.equal(tf.argmax(logits, -1),  tf.argmax(y_, 1)) 
-#    with tf.name_scope('accuracy'):
-#        accuracy = tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
-#
-#
-#    # Summary data for tensorboard
-#    tf.summary.scalar('cross_entropy', cross_entropy_loss)
-#    tf.summary.scalar('accuracy', accuracy)
-#    tf.summary.image('input', tf.reshape(x, [-1, 28, 28, 1]), 3)
-#
-#    summary_merge = tf.summary.merge_all()
-#
 
     # Init and Session
     init = tf.global_variables_initializer() 
@@ -114,19 +74,17 @@ def main():
                                              y_:batch_y, 
                                              keep_prob: 0.5})
             if epoch % 100 == 0:
-#"""
+#
 #                print "[+] Accuracy: %s" % (accuracy.eval(
 #                                            feed_dict={x:mnist.test.images, 
 #                                                       y_:mnist.test.labels,
 #                                                       keep_prob: 1.0}))
-#"""
+#
 #                print "[+] keep_prob: %s" % (keep_prob) 
 
                 logProjector.update(sess, epoch)
                 tbLogger.write_train_state(summary, epoch)
-                #train_writer.add_summary(summary, epoch)
         tbLogger.write_train_graph(sess)
-        #train_writer.add_graph(sess.graph)
 
 if __name__ == '__main__':
     main()

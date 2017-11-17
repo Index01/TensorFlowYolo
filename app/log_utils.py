@@ -1,6 +1,9 @@
 
 
-""" Some repeat use logging utilities for working with Tensorboard """
+""" 
+   Some repeat use logging utilities for working with Tensorboard 
+"""
+
 import os
 import tensorflow as tf
 from tensorflow.contrib.tensorboard.plugins import projector

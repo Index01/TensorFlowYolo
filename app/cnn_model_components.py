@@ -1,13 +1,17 @@
 
-import tensorflow as tf
-from dem_decorators import tfNamespace, tfNamespaceBias, tfNamespaceWeight, tfNamespaceScalar 
-
-
 """
    CNN model building blocks.
 
    Currently these modules are using constants which anticipate the MNist dataset as input.
 """
+
+import tensorflow as tf
+from dem_decorators import tfNamespace, tfNamespaceBias, tfNamespaceWeight, tfNamespaceScalar 
+
+
+###########################################
+### Model parameters below              ###
+###########################################
 
 @tfNamespaceWeight
 def W_shop(shape):
@@ -43,6 +47,11 @@ def pool(x):
     ksize = [1, 2, 2, 1]
     with tf.name_scope("pool"):
         return tf.nn.max_pool(x, ksize=ksize, strides=strides, padding='SAME') 
+
+
+###########################################
+### Model setup below                   ###
+###########################################
 
 
 @tfNamespace
@@ -116,10 +125,14 @@ def model_setup(x):
     return {'keep_prob':keep_prob, 'logits':logits}
 
 
+
+###########################################
 ### Loss and activation functions below ###
+###########################################
 
 @tfNamespaceScalar
 def cross_entropy(logits, labels):
+    """ Execute the crossentropy activation function""" 
     return tf.reduce_mean(
                           tf.nn.softmax_cross_entropy_with_logits(
                           logits=logits,
@@ -136,6 +149,7 @@ def train_optimizer(cross_entropy_loss, learning_rate):
     
 @tfNamespace
 def calc_accuracy(logits, labels):
+    """ Return the mean accuracy"""
     correct_predictions = tf.equal(tf.argmax(logits, -1), tf.argmax(labels, 1))
     return tf.reduce_mean(tf.cast(correct_predictions, tf.float32))
 

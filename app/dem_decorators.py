@@ -1,8 +1,8 @@
 
 
-
-""" Some useful decorators for tensorboard reporting """
-
+""" 
+    Some useful decorators for tensorboard reporting 
+"""
 
 from functools import wraps
 import tensorflow as tf
