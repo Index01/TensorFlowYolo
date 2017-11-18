@@ -13,6 +13,13 @@ from dem_decorators import tfNamespace, tfNamespaceBias, tfNamespaceWeight, tfNa
 ### Model parameters below              ###
 ###########################################
 
+def IO_setup():
+    """ Inputs and Outputs """
+    x = tf.placeholder(tf.float32, [None, 784], name='x')
+    y_ = tf.placeholder(tf.float32, [None, 10], name='y_')
+    return x, y_
+ 
+
 @tfNamespaceWeight
 def W_shop(shape):
     """ Model weights"""
@@ -147,7 +154,7 @@ def train_optimizer(cross_entropy_loss, learning_rate):
     return optimizer.minimize(cross_entropy_loss)
 
     
-@tfNamespace
+@tfNamespaceScalar
 def calc_accuracy(logits, labels):
     """ Return the mean accuracy"""
     correct_predictions = tf.equal(tf.argmax(logits, -1), tf.argmax(labels, 1))

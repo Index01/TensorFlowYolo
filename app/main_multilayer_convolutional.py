@@ -12,13 +12,6 @@ from tensorflow.examples.tutorials.mnist import input_data
 import cnn_model_components as cnn
 from log_utils import Projector, TBLogger
 
-def IO_setup():
-    """ Inputs and Outputs """
-    with tf.name_scope("input_output"):
-        x = tf.placeholder(tf.float32, [None, 784], name='x')
-        y_ = tf.placeholder(tf.float32, [None, 10], name='y_')
-        return x, y_
-
 
 def main():
     """Point of entry for our tensorflow mnist multilayer convolutional model.
@@ -39,9 +32,8 @@ def main():
 
 
     # Model
-    x, y_ = IO_setup()
+    x, y_ = cnn.IO_setup()
     model = cnn.model_setup(x)
-    print 'model: %s' % (model)
     keep_prob = model.get('keep_prob') 
     logits=model.get('logits') 
    

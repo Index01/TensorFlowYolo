@@ -16,7 +16,7 @@ def tfNamespace(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         with tf.name_scope(func.__name__):
-            print func.__name__
+            #print func.__name__
             #TODO: extend this functonality to graph other tensor datatypes.
             try: 
                 tf.summary.histogram('Weights', kwargs['W'])
@@ -31,7 +31,7 @@ def tfNamespaceWeight(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         with tf.name_scope(func.__name__):
-            print func.__name__
+            #print func.__name__
             ret = func(*args, **kwargs)
             tf.summary.histogram('Weight', ret)
             return ret
@@ -43,7 +43,7 @@ def tfNamespaceBias(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         with tf.name_scope(func.__name__):
-            print func.__name__
+            #print func.__name__
             ret = func(*args, **kwargs)
             tf.summary.histogram('Biases', ret)
             return ret
@@ -55,7 +55,7 @@ def tfNamespaceScalar(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         with tf.name_scope(func.__name__):
-            print func.__name__
+            #print func.__name__
             ret = func(*args, **kwargs)
             tf.summary.scalar(func.__name__, ret)
             return ret
