@@ -9,12 +9,13 @@ from app import cnn_model_components as cuTest
 
 print "\n[+] Engage Multilayer Convolution Tests, Starfighter.\n"
 
+keep_prob = tf.placeholder(tf.float32)
 x = tf.placeholder(tf.float32, [100, 784])
 conv_layer1 = cuTest.create_conv_layer(x, [5, 5, 1, 32], [32])   
 conv_layer2 = cuTest.create_subsequent_conv_layer(conv_layer1, [5, 5, 32, 64], [64])
-cropped_neurons, keep_prob = cuTest.drop_neurons(conv_layer2)
+cropped_neurons = cuTest.drop_neurons(conv_layer2, keep_prob)
 connected_layer = cuTest.create_connected_layer(cropped_neurons, 32)
-cropped_neurons, keep_prob = cuTest.drop_neurons(connected_layer)
+cropped_neurons = cuTest.drop_neurons(connected_layer, keep_prob)
  
 def test_mlcv_wshop():
     assert (cuTest.W_shop([5, 5, 1, 32])).shape==(5, 5, 1, 32)
@@ -41,13 +42,13 @@ def test_mlcv_pool():
 
 def test_mlcv_create_logits():
     connected_layer = cuTest.create_connected_layer(conv_layer2, 64)
-    cropped_neurons, keep_prob = cuTest.drop_neurons(connected_layer)
+    cropped_neurons = cuTest.drop_neurons(connected_layer, keep_prob)
     assert (cuTest.create_logits(cropped_neurons)).shape==(100, 10)
 
 
 def test_mlcv_drop_neurons():
     connected_layer = cuTest.create_connected_layer(conv_layer2, 64)
-    cropped_neurons, keep_prob = cuTest.drop_neurons(connected_layer)
+    cropped_neurons = cuTest.drop_neurons(connected_layer, keep_prob)
     assert cropped_neurons.shape==(100, 1024)
 
 
@@ -68,9 +69,9 @@ def test_mlcv_create_connectedLayer():
 
 
 def test_mlcv_modelSetup():
-    print cuTest.model_setup(x).get('keep_prob')
-    assert ((cuTest.model_setup(x)).get('keep_prob')).shape==()
-    assert ((cuTest.model_setup(x)).get('logits')).shape==(100, 10)
+    #print cuTest.model_setup(x).get('keep_prob')
+    #assert ((cuTest.model_setup(x)).get('keep_prob')).shape==()
+    assert ((cuTest.model_setup(x, keep_prob)).get('logits')).shape==(100, 10)
 
 
 

@@ -85,7 +85,7 @@ def create_subsequent_conv_layer(previous_layer, weights, biases):
         W_conv2 = W_shop(weights)
         b_conv2 = W_shop(biases)
     
-        # Relo 
+        # Relu 
         h_conv2 = tf.nn.relu(convolve(previous_layer, W=W_conv2) + b_conv2) 
         return pool(h_conv2)
 
@@ -113,23 +113,25 @@ def create_logits(drop_op):
 
 
 @tfNamespace
-def drop_neurons(fully_connected_layer):
+def drop_neurons(fully_connected_layer, keep_prob):
     """ DDDDDdropout """
     #TODO: review keep_prob implementation 
-    keep_prob = tf.placeholder(tf.float32, shape=[])
+#    keep_prob = tf.placeholder(tf.float32, shape=[])
+#    keep_prob = tf.placeholder(tf.float32)
     cropped =tf.nn.dropout(fully_connected_layer, keep_prob) 
-    return cropped, keep_prob
+    return cropped 
 
 
 @tfNamespace
-def model_setup(x):
+def model_setup(x, keep_prob):
     """ Model setup """
     conv_layer1 = create_conv_layer(x, [5, 5, 1, 32], [32])
     conv_layer2 = create_subsequent_conv_layer(conv_layer1, [5, 5, 32, 64], [64]) 
     connected_layer1 = create_connected_layer(conv_layer2, 64)
-    cropped_neurons1, keep_prob = drop_neurons(connected_layer1) 
+    cropped_neurons1 = drop_neurons(connected_layer1, keep_prob) 
     logits = create_logits(cropped_neurons1) 
-    return {'keep_prob':keep_prob, 'logits':logits}
+    #return {'keep_prob':keep_prob, 'logits':logits}
+    return {'logits':logits}
 
 
 

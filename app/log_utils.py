@@ -37,7 +37,11 @@ class TBLogger():
 
     def merge_summaries(self):
         return tf.summary.merge_all() 
-
+    
+    def get_summaries(self):
+        merged = self.merge_summaries()
+        return map(lambda x:merged.graph.get_collection(x), 
+                            merged.graph.get_all_collection_keys()) 
 
     def get_train_log_dir(self):
         return self.train_logs

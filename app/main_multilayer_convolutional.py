@@ -26,24 +26,24 @@ def main():
 
     # Training parameters
     mnist = input_data.read_data_sets("../MNIST_data", one_hot=True)
+    mnist_log_ds = input_data.read_data_sets("../MNIST_data", one_hot=False)
     learning_rate = 0.01
-    batch_size = 100
+    batch_size = 50
     training_epochs = 1000
 
 
     # Model
     x, y_ = cnn.IO_setup()
-    model = cnn.model_setup(x)
-    keep_prob = model.get('keep_prob') 
-    logits=model.get('logits') 
-   
+    keep_prob = tf.placeholder(tf.float32) 
+    model = cnn.model_setup(x, keep_prob)
+    logits = model.get('logits') 
  
     # Logs
     tbLogger = TBLogger(logdir='multilayer_convolution')
     tbLogger.image_summary(x)
     logProjector = Projector(log_dir=tbLogger.get_train_log_dir(), 
-                             metadata_labels=input_data.read_data_sets("../MNIST_data").test.labels, 
-                             metadata_data=mnist.test.images) 
+                             metadata_labels=mnist_log_ds.train.labels, 
+                             metadata_data=mnist_log_ds.train.images) 
 
 
     # Loss and Train
@@ -60,13 +60,12 @@ def main():
         sess.run(init)
         for epoch in range(training_epochs):
             batch_x, batch_y = mnist.train.next_batch(batch_size)
-            #train.run(feed_dict={x: batch_x, y_: batch_y, keep_prob: 1.0})
             _, summary = sess.run([train, summary_merge],
                                   feed_dict={x:batch_x, 
                                              y_:batch_y, 
                                              keep_prob: 0.5})
             if epoch % 100 == 0:
-#
+                print epoch
 #                print "[+] Accuracy: %s" % (accuracy.eval(
 #                                            feed_dict={x:mnist.test.images, 
 #                                                       y_:mnist.test.labels,
