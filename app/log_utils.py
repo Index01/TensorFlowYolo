@@ -13,7 +13,7 @@ from tensorflow.contrib.tensorboard.plugins import projector
 class TBLogger():
     def __init__(self, logdir):
         self.train_logs = os.path.abspath("../logs/train/"+logdir) 
-        self.test_logs = os.path.abspath("../logs/test"+logdir) 
+        self.test_logs = os.path.abspath("../logs/test/"+logdir) 
         self.train_writer = tf.summary.FileWriter(logdir=self.train_logs)
         self.test_writer = tf.summary.FileWriter(logdir=self.test_logs)
 

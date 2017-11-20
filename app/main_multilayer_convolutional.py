@@ -60,21 +60,25 @@ def main():
         sess.run(init)
         for epoch in range(training_epochs):
             batch_x, batch_y = mnist.train.next_batch(batch_size)
+            test_x, test_y = mnist.test.next_batch(batch_size)
             _, summary = sess.run([train, summary_merge],
                                   feed_dict={x:batch_x, 
                                              y_:batch_y, 
-                                             keep_prob: 0.5})
+                                             keep_prob: 1.0})
+
             if epoch % 100 == 0:
                 print epoch
-#                print "[+] Accuracy: %s" % (accuracy.eval(
-#                                            feed_dict={x:mnist.test.images, 
-#                                                       y_:mnist.test.labels,
-#                                                       keep_prob: 1.0}))
-#
-#                print "[+] keep_prob: %s" % (keep_prob) 
+                acc, summary = sess.run([accuracy, summary_merge],
+                                         feed_dict={x:test_x, 
+                                                    y_:test_y, 
+                                                    keep_prob: 1.0})
+                print "[+]Accuracy: %s" % (acc)
 
+                tbLogger.write_test_state(summary, epoch)
                 logProjector.update(sess, epoch)
-                tbLogger.write_train_state(summary, epoch)
+
+            tbLogger.write_train_state(summary, epoch)
+
         tbLogger.write_train_graph(sess)
 
 if __name__ == '__main__':
