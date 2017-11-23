@@ -2,7 +2,7 @@
 #! /usr/bin/env python
 
 """
-   Multilayer CNN model for solving the 10,000 data point Mnist set.
+   Multilayer CNN model for solving the 10,000 image Mnist set.
 """
 
 import os
@@ -16,10 +16,10 @@ from log_utils import Projector, TBLogger
 def main():
     """Point of entry for our tensorflow mnist multilayer convolutional model.
 
-       Currently only the training set is running, further paramaterization is
-       needed and the test data set should be run at a standard interval. This
-       stuff is really rough, we achieve ~91% accuracy with no dropout or batch
-       or convolution ops. The purpose is to demo XEnt and Softmax with Tensorboard. 
+       This model runs with components from the cnn module and reduces loss through
+       the cross entropy functions from Tensorflow. The model currently achieves approx 98% accuracy
+       in recognizing the 10,000 handwritten digits 0-9 from the MNIST training set, with no 
+       particular pre-processing or sorting.
     """
     print "[+] Welcome Starfighter"
 
@@ -29,7 +29,7 @@ def main():
     mnist_log_ds = input_data.read_data_sets("../MNIST_data", one_hot=False)
     learning_rate = 0.01
     batch_size = 50
-    training_epochs = 1000
+    training_epochs = 2000
 
 
     # Model
