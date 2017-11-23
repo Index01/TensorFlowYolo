@@ -10,7 +10,7 @@ Currently the 10,000 datapoint MNIST problem is solved with over 98% accuracy th
 
 #### Getting started
 
-Clone, build and install Tensorflow v1.3.0 or above before you clone this repo.
+Build and install Tensorflow v1.3.0 or above before you clone this repo.
 
 ```
 source [your virtual env]
@@ -21,11 +21,10 @@ python ./main_multilayer_convolution.py
 ...wait for time proportional to the number of GPUs you has, 15mins on an average laptop...
 
 ```
-tensoorboard --logdir=../logs/
-
+tensorboard --logdir=../logs/
 ```
 
-Open a browser and view the sweet results at 127.0.0.1:6006
+Open a browser and view the sweet results: 127.0.0.1:6006
 
 
 ![alt text](./docs/TFShow.gif)
