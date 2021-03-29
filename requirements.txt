@@ -1,5 +1,5 @@
 Markdown==2.6.9
-Pygments==2.2.0
+Pygments==2.7.4
 Werkzeug==0.12.2
 argparse==1.2.1
 backports.weakref==1.0rc1
