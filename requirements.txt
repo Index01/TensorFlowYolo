@@ -11,7 +11,7 @@ chardet==3.0.4
 curtsies==0.2.11
 funcsigs==1.0.2
 greenlet==0.4.12
-html5lib==0.9999999
+html5lib==0.99999999
 idna==2.6
 mock==2.0.0
 numpy==1.13.1
